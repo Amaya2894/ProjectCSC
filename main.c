@@ -55,6 +55,7 @@ void registerPatient() {
 
     printf("\n--- New Patient Intake (PAT-%d) ---\n", patientIDs[idx]);
     printf("Enter Patient Name: ");
+
     fgets(patientNames[idx], 70, stdin);
     patientNames[idx][strcspn(patientNames[idx], "\n")] = 0; // enter new line removal
 
@@ -68,7 +69,9 @@ void registerPatient() {
     printf("Specialty ID (1-OPD, 2-Paediatrics, 3-Cardiology, 4-Neurology): ");
     int specChoice;
     scanf("%d", &specChoice);
+
     assignedSpecialties[idx] = specChoice - 1;
+
 
     // Ward Admission
     int needWard;
@@ -126,7 +129,7 @@ void printBill(int idx){
     if (urgencyLevels[idx] == 2) surcharge = base * 0.20f;
     else if (urgencyLevels[idx] == 3) surcharge = base * 0.50f;
 
-    float wardCost = 0.0f;
+    float wgitardCost = 0.0f;
     if (assignedWards[idx] != -1) {
         wardCost = daysAdmitted[idx] * WARD_RATES[assignedWards[idx]];
     }
