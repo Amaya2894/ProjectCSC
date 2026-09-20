@@ -16,6 +16,7 @@ void saveDataToFile();
 const char SPECIALTY_NAMES[4][30] = {"General Practice (OPD)", "Paediatrics", "Cardiology", "Neurology"};
 const float BASE_FEES[4] = {1500.00, 2500.00, 4500.00, 5000.00};
 const int CONSULT_TIMES[4] = {15, 20, 30, 30};
+const int SPECIALTY_CAPACITIES[4] = {30, 20, 12, 10};
 int queueCounts[4] = {0, 0, 0, 0};
 
 // Ward Data
@@ -41,8 +42,9 @@ int assignedSpecialties[MAX_PATIENTS];
 int assignedWards[MAX_PATIENTS];
 int assignedBeds[MAX_PATIENTS];
 int daysAdmitted[MAX_PATIENTS];
-
 int totalPatients = 0;
+float finalAmounts[MAX_PATIENTS];
+float discounts[MAX_PATIENTS];
 
 void registerPatient() {
     if (totalPatients >= MAX_PATIENTS) {
@@ -129,7 +131,7 @@ void printBill(int idx){
     if (urgencyLevels[idx] == 2) surcharge = base * 0.20f;
     else if (urgencyLevels[idx] == 3) surcharge = base * 0.50f;
 
-    float wgitardCost = 0.0f;
+    float wardCost = 0.0f;
     if (assignedWards[idx] != -1) {
         wardCost = daysAdmitted[idx] * WARD_RATES[assignedWards[idx]];
     }
@@ -142,6 +144,10 @@ void printBill(int idx){
     }
 
     float netPayable = gross - discount;
+
+    discounts[idx] = discount;
+    finalAmounts[idx] = netPayable;
+
     float waitTime = queueCounts[sIdx] * CONSULT_TIMES[sIdx];
     queueCounts[sIdx]++;
 
@@ -220,7 +226,7 @@ void generateAnalytics() {
 
 
 void saveDataToFile() {
-    FILE *fp = fopen("patient_records.txt", "w");
+    FILE *fp = fopen("patient_records.txt", "a");
     if (fp == NULL) {
         printf("Error opening file!\n");
         return;
