@@ -25,6 +25,17 @@ void initializeBeds() {
     }
 }
 
+int patientIDs[MAX_PATIENTS];
+char patientNames[MAX_PATIENTS][70];
+int patientAges[MAX_PATIENTS];
+int urgencyLevels[MAX_PATIENTS];
+int assignedSpecialties[MAX_PATIENTS];
+int assignedWards[MAX_PATIENTS];
+int assignedBeds[MAX_PATIENTS];
+int daysAdmitted[MAX_PATIENTS];
+
+int totalPatients = 0;
+
 int main()
 {
     printf("Smart Hospital Management System...\n");
