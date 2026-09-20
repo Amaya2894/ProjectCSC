@@ -125,7 +125,6 @@ void printBill(int idx){
 
     float gross = base + surcharge + wardCost;
 
-    // Age Subsidy (Age < 5 OR Age > 65)
     float discount = 0.0f;
     if (patientAges[idx] < 5 || patientAges[idx] > 65) {
         discount = gross * 0.15f;
@@ -189,6 +188,25 @@ void viewTriageList() {
                patientIDs[p], patientNames[p], urgencyLevels[p], SPECIALTY_NAMES[assignedSpecialties[p]]);
     }
 }
+
+void generateAnalytics() {
+    if (totalPatients == 0) {
+        printf("\nNo records available for analytics.\n");
+        return;
+    }
+
+    printf("\n--- HOSPITAL PERFORMANCE ANALYTICS ---\n");
+    printf("Total Registered Patients: %d\n", totalPatients);
+
+    for (int w = 0; w < 4; w++) {
+        int occupied = 0;
+        for (int b = 0; b < WARD_CAPACITIES[w]; b++) {
+            if (bedOccupancy[w][b] == 1) occupied++;
+        }
+        printf("%s Occupancy: %d/%d beds\n", WARD_NAMES[w], occupied, WARD_CAPACITIES[w]);
+    }
+}
+
 int main() {
     initializeBeds();
     int choice = 0;
@@ -203,6 +221,9 @@ int main() {
                 break;
             case 2:
                 viewTriageList();
+                break;
+            case 3:
+                generateAnalytics();
                 break;
             case 5:
                 printf("Exiting system...\n");
