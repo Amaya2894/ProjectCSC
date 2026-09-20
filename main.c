@@ -207,6 +207,22 @@ void generateAnalytics() {
     }
 }
 
+
+void saveDataToFile() {
+    FILE *fp = fopen("patient_records.txt", "w");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    for (int i = 0; i < totalPatients; i++) {
+        fprintf(fp, "PAT-%d, %s, Age: %d, Urgency: %d\n",
+                patientIDs[i], patientNames[i], patientAges[i], urgencyLevels[i]);
+    }
+    fclose(fp);
+    printf("\nData saved successfully to 'patient_records.txt'!\n");
+}
+
 int main() {
     initializeBeds();
     int choice = 0;
@@ -224,6 +240,9 @@ int main() {
                 break;
             case 3:
                 generateAnalytics();
+                break;
+            case 4:
+                saveDataToFile();
                 break;
             case 5:
                 printf("Exiting system...\n");
