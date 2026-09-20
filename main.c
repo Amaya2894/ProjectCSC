@@ -36,8 +36,97 @@ int daysAdmitted[MAX_PATIENTS];
 
 int totalPatients = 0;
 
-int main()
-{
-    printf("Smart Hospital Management System...\n");
+void registerPatient() {
+    if (totalPatients >= MAX_PATIENTS) {
+        printf("\nError: Hospital Capacity Reached!\n");
+        return;
+    }
+
+    int idx = totalPatients;
+    patientIDs[idx] = 1001 + idx;
+
+    printf("\n--- New Patient Intake (PAT-%d) ---\n", patientIDs[idx]);
+    printf("Enter Patient Name: ");
+    fgets(patientNames[idx], 70, stdin);
+    patientNames[idx][strcspn(patientNames[idx], "\n")] = 0; // enter new line removal
+
+    printf("Enter Age: ");
+    scanf("%d", &patientAges[idx]);
+
+    printf("Urgency Level (1 = Normal, 2 = Urgent, 3 = Critical): ");
+    scanf("%d", &urgencyLevels[idx]);
+
+    // Select Specialty
+    printf("Specialty ID (1-OPD, 2-Paediatrics, 3-Cardiology, 4-Neurology): ");
+    int specChoice;
+    scanf("%d", &specChoice);
+    assignedSpecialties[idx] = specChoice - 1;
+
+    // Ward Admission
+    int needWard;
+    printf("Admit to Ward? (1 = Yes, 0 = No): ");
+    scanf("%d", &needWard);
+
+    if (needWard == 1) {
+        printf("Select Ward (1-General, 2-Paediatric, 3-Surgical, 4-ICU): ");
+        int wardChoice;
+        scanf("%d", &wardChoice);
+        int wIdx = wardChoice - 1;
+        assignedWards[idx] = wIdx;
+
+        printf("Enter Days Admitted: ");
+        scanf("%d", &daysAdmitted[idx]);
+
+        // Bed allocation
+        int allocatedBed = -1;
+        for (int b = 0; b < WARD_CAPACITIES[wIdx]; b++) {
+            if (bedOccupancy[wIdx][b] == 0) {
+                bedOccupancy[wIdx][b] = 1; // Mark as occupied
+                allocatedBed = b + 1;
+                break;
+            }
+        }
+        assignedBeds[idx] = allocatedBed;
+    } else {
+        assignedWards[idx] = -1;
+        assignedBeds[idx] = -1;
+        daysAdmitted[idx] = 0;
+    }
+
+    totalPatients++;
+    printf("Patient PAT-%d Registered Successfully!\n", patientIDs[idx]);
+}
+
+void showMenu() {
+    printf("\n====================================================\n");
+    printf("   SMART HOSPITAL MANAGEMENT SYSTEM - USJ FAS\n");
+    printf("====================================================\n");
+    printf("1. Register New Patient Intake\n");
+    printf("2. View Priority Triage Sorting List\n");
+    printf("3. Performance Reports & Analytics\n");
+    printf("4. Save System Data to File\n");
+    printf("5. Exit System\n");
+    printf("----------------------------------------------------\n");
+}
+
+int main() {
+    initializeBeds();
+    int choice = 0;
+    do {
+        showMenu();
+        printf("Enter your choice (1-5): ");
+        if (scanf("%d", &choice) != 1) break;
+        getchar();
+        switch(choice) {
+            case 1:
+                registerPatient();
+                break;
+            case 5:
+                printf("Exiting system...\n");
+                break;
+            default:
+                printf("Invalid Choice!\n");
+        }
+    } while (choice != 5);
     return 0;
 }
