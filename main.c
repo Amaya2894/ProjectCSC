@@ -15,6 +15,16 @@ const char WARD_NAMES[4][30] = {"General Ward", "Paediatric Ward", "Surgical War
 const float WARD_RATES[4] = {3000.00, 6000.00, 12000.00, 25000.00};
 const int WARD_CAPACITIES[4] = {20, 10, 10, 5};
 
+int bedOccupancy[4][20];
+
+void initializeBeds() {
+    for (int w = 0; w < 4; w++) {
+        for (int b = 0; b < 20; b++) {
+            bedOccupancy[w][b] = 0;
+        }
+    }
+}
+
 int main()
 {
     printf("Smart Hospital Management System...\n");
