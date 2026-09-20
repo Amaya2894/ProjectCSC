@@ -162,7 +162,33 @@ void printBill(int idx){
     printf("Est. Waiting Time     : %.2f mins\n", waitTime);
     printf("====================================================\n\n");
 }
+void viewTriageList() {
+    if (totalPatients == 0) {
+        printf("\nNo patients currently registered.\n");
+        return;
+    }
 
+    int pos[MAX_PATIENTS];
+    for (int i = 0; i < totalPatients; i++) pos[i] = i;
+
+
+    for (int i = 0; i < totalPatients - 1; i++) {
+        for (int j = 0; j < totalPatients - i - 1; j++) {
+            if (urgencyLevels[pos[j]] < urgencyLevels[pos[j + 1]]) {
+                int temp = pos[j];
+                pos[j] = pos[j + 1];
+                pos[j + 1] = temp;
+            }
+        }
+    }
+
+    printf("\n--- EMERGENCY TRIAGE PRIORITY LIST ---\n");
+    for (int i = 0; i < totalPatients; i++) {
+        int p = pos[i];
+        printf("PAT-%d | %s | Urgency Level: %d | Specialty: %s\n",
+               patientIDs[p], patientNames[p], urgencyLevels[p], SPECIALTY_NAMES[assignedSpecialties[p]]);
+    }
+}
 int main() {
     initializeBeds();
     int choice = 0;
@@ -174,6 +200,9 @@ int main() {
         switch(choice) {
             case 1:
                 registerPatient();
+                break;
+            case 2:
+                viewTriageList();
                 break;
             case 5:
                 printf("Exiting system...\n");
