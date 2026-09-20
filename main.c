@@ -11,6 +11,8 @@ void printBill(int idx);
 void viewTriageList();
 void generateAnalytics();
 void saveDataToFile();
+void saveBedsToFile();
+void loadBedsFromFile();
 
 // Specialty
 const char SPECIALTY_NAMES[4][30] = {"General Practice (OPD)", "Paediatrics", "Cardiology", "Neurology"};
@@ -32,6 +34,20 @@ void initializeBeds() {
             bedOccupancy[w][b] = 0;
         }
     }
+}
+
+void loadBedsFromFile() {
+    FILE *fp = fopen("beds_status.txt", "r");
+    if (fp == NULL) {
+        initializeBeds();
+        return;
+    }
+    for (int w = 0; w < 4; w++) {
+        for (int b = 0; b < WARD_CAPACITIES[w]; b++) {
+            fscanf(fp, "%d", &bedOccupancy[w][b]);
+        }
+    }
+    fclose(fp);
 }
 
 int patientIDs[MAX_PATIENTS];
@@ -68,12 +84,18 @@ void registerPatient() {
     scanf("%d", &urgencyLevels[idx]);
 
     // Select Specialty
-    printf("Specialty ID (1-OPD, 2-Paediatrics, 3-Cardiology, 4-Neurology): ");
     int specChoice;
-    scanf("%d", &specChoice);
+    do {
+        printf("Specialty ID (1-OPD, 2-Paediatrics, 3-Cardiology, 4-Neurology): ");
+        scanf("%d", &specChoice);
+    } while (specChoice < 1 || specChoice > 4);
+
+    if (queueCounts[specChoice - 1] >= SPECIALTY_CAPACITIES[specChoice - 1]) {
+        printf("Sorry, %s has reached its daily patient cap!\n", SPECIALTY_NAMES[specChoice - 1]);
+        return;
+    }
 
     assignedSpecialties[idx] = specChoice - 1;
-
 
     // Ward Admission
     int needWard;
@@ -223,7 +245,23 @@ void generateAnalytics() {
         printf("%s Occupancy: %d/%d beds\n", WARD_NAMES[w], occupied, WARD_CAPACITIES[w]);
     }
 }
+void saveBedsToFile() {
+    FILE *fp = fopen("beds_status.txt", "w");
 
+    if (fp == NULL) {
+        printf("Error opening beds status file!\n");
+        return;
+    }
+
+    for (int w = 0; w < 4; w++) {
+        for (int b = 0; b < WARD_CAPACITIES[w]; b++) {
+            fprintf(fp, "%d ", bedOccupancy[w][b]);
+        }
+        fprintf(fp, "\n");
+    }
+
+    fclose(fp);
+}
 
 void saveDataToFile() {
     FILE *fp = fopen("patient_records.txt", "a");
@@ -232,16 +270,17 @@ void saveDataToFile() {
         return;
     }
 
-    for (int i = 0; i < totalPatients; i++) {
+    for (int i = savedCount; i < totalPatients; i++) {
         fprintf(fp, "PAT-%d, %s, Age: %d, Urgency: %d\n",
                 patientIDs[i], patientNames[i], patientAges[i], urgencyLevels[i]);
     }
+    savedCount = totalPatients;
     fclose(fp);
     printf("\nData saved successfully to 'patient_records.txt'!\n");
 }
 
 int main() {
-    initializeBeds();
+    loadBedsFromFile();
     int choice = 0;
     do {
         showMenu();
@@ -268,5 +307,6 @@ int main() {
                 printf("Invalid Choice!\n");
         }
     } while (choice != 5);
+    saveBedsToFile();
     return 0;
 }
