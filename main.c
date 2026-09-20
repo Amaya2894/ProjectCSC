@@ -4,6 +4,14 @@
 
 #define MAX_PATIENTS 100
 
+void initializeBeds();
+void registerPatient();
+void showMenu();
+void printBill(int idx);
+void viewTriageList();
+void generateAnalytics();
+void saveDataToFile();
+
 // Specialty
 const char SPECIALTY_NAMES[4][30] = {"General Practice (OPD)", "Paediatrics", "Cardiology", "Neurology"};
 const float BASE_FEES[4] = {1500.00, 2500.00, 4500.00, 5000.00};
@@ -100,7 +108,7 @@ void registerPatient() {
 
 void showMenu() {
     printf("\n====================================================\n");
-    printf("   SMART HOSPITAL MANAGEMENT SYSTEM - USJ FAS\n");
+    printf("        SMART HOSPITAL MANAGEMENT SYSTEM \n");
     printf("====================================================\n");
     printf("1. Register New Patient Intake\n");
     printf("2. View Priority Triage Sorting List\n");
