@@ -92,6 +92,7 @@ void registerPatient() {
         assignedBeds[idx] = -1;
         daysAdmitted[idx] = 0;
     }
+    printBill(idx);
 
     totalPatients++;
     printf("Patient PAT-%d Registered Successfully!\n", patientIDs[idx]);
@@ -107,6 +108,59 @@ void showMenu() {
     printf("4. Save System Data to File\n");
     printf("5. Exit System\n");
     printf("----------------------------------------------------\n");
+}
+void printBill(int idx){
+    int sIdx = assignedSpecialties[idx];
+
+    float base = BASE_FEES[sIdx];
+    float surcharge = 0.0f;
+
+    if (urgencyLevels[idx] == 2) surcharge = base * 0.20f;
+    else if (urgencyLevels[idx] == 3) surcharge = base * 0.50f;
+
+    float wardCost = 0.0f;
+    if (assignedWards[idx] != -1) {
+        wardCost = daysAdmitted[idx] * WARD_RATES[assignedWards[idx]];
+    }
+
+    float gross = base + surcharge + wardCost;
+
+    // Age Subsidy (Age < 5 OR Age > 65)
+    float discount = 0.0f;
+    if (patientAges[idx] < 5 || patientAges[idx] > 65) {
+        discount = gross * 0.15f;
+    }
+
+    float netPayable = gross - discount;
+    float waitTime = queueCounts[sIdx] * CONSULT_TIMES[sIdx];
+    queueCounts[sIdx]++;
+
+    printf("\n====================================================\n");
+    printf("          SMART HOSPITAL INVOICE & ADMISSION\n");
+    printf("----------------------------------------------------\n");
+    printf("Patient ID     : PAT-%d\n", patientIDs[idx]);
+    printf("Patient Name   : %s\n", patientNames[idx]);
+    printf("Age            : %d Years\n", patientAges[idx]);
+    printf("Specialty      : %s\n", SPECIALTY_NAMES[sIdx]);
+
+    if (assignedWards[idx] != -1) {
+        printf("Assigned Ward  : %s (Bed #%d)\n", WARD_NAMES[assignedWards[idx]], assignedBeds[idx]);
+    } else {
+        printf("Assigned Ward  : None (OPD Outpatient)\n");
+    }
+
+    printf("Urgency Level  : Level %d\n", urgencyLevels[idx]);
+    printf("----------------------------------------------------\n");
+    printf("Base Consultation Fee : LKR %.2f\n", base);
+    printf("Emergency Surcharge   : LKR %.2f\n", surcharge);
+    printf("Ward Stay Cost        : LKR %.2f\n", wardCost);
+    printf("----------------------------------------------------\n");
+    printf("Gross Total           : LKR %.2f\n", gross);
+    printf("Age Subsidy Discount  : LKR -%.2f\n", discount);
+    printf("----------------------------------------------------\n");
+    printf("Final Payable Amount  : LKR %.2f\n", netPayable);
+    printf("Est. Waiting Time     : %.2f mins\n", waitTime);
+    printf("====================================================\n\n");
 }
 
 int main() {
